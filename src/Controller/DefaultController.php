@@ -21,6 +21,6 @@ class DefaultController extends AbstractController
      */
     public function index2()
     {
-        return new Response('Hi!');
+        return new Response('Dev branch!');
     }
 }
