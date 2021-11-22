@@ -16,5 +16,12 @@
         <li>Your controller at <code><a href="{{ '/Users/admin/.bitnami/stackman/machines/xampp/volumes/root/htdocs/shop/src/Controller/CustomerController.php'|file_link(0) }}">src/Controller/CustomerController.php</a></code></li>
         <li>Your template at <code><a href="{{ '/Users/admin/.bitnami/stackman/machines/xampp/volumes/root/htdocs/shop/templates/customer/index.html.twig'|file_link(0) }}">templates/customer/index.html.twig</a></code></li>
     </ul>
+<ul>
+    {% for customer in customer%}
+        <li> {{customer.name}} have action {{customer.action}}</li>
+
+
+    {%endfor%}
+    </ul>
 </div>
 {% endblock %}
