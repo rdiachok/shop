@@ -9,18 +9,14 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello! ✅</h1>
+    <h1>User Page! ✅</h1>
 
+    Response is:
     <ul>
-        <li>Response: {{ user }}</li>
-
-    </ul>
-    <ul>
-        <li> Get all info about users: /user/getAll</li>
-        <li> Get some info about user: /user/get/{id}</li>
-        <li> Update info about user: /user/put/{id}</li>
-        <li> Insert new user : /user/post/{id}</li>
-        <li> Delete user: /user/delete/{id}</li>
+        <li> first name: {{ user_name_first }}</li>
+        <li> last name: {{ user_last_name }}</li>
+        <li> last action: {{ user_action }}</li>
+        <li> last mail: {{ user_mail }}</li>
     </ul>
 </div>
 {% endblock %}
