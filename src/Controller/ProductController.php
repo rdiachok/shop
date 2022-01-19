@@ -2,71 +2,187 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
+use App\Entity\Products;
+use App\Form\NameProductSearchType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Form\AddProductType;
 
 class ProductController extends AbstractController
 {
     /**
-     * @Route("/product/add/{id}", name="product_add", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/product/add/", name="product_add")
      */
-    public function productAdd(int $id): Response
+    public function productAdd(Request $request): Response
     {
-        $entinyManager = $this->getDoctrine()->getManager();
-        $productAdd = new Product();
-        $productAdd->setName('milk')
-            ->setCount('199')
-            ->setFactory('CherkasuMilk')
-            ->setPrice('30');
+        $product = new Products();
 
-        $entinyManager->persist($productAdd);
-        $entinyManager->flush();
+        $form = $this->createForm(AddProductType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($product);
+            $entityManager->flush();
+
+            return $this->render('product/index.html.twig', [
+                    'form' => 'Main Page after add new Product',
+                    'text' => 'Response of registration new product, his ID: ' . $product->getId(),
+                ]
+            );
+        }
 
         return $this->render('product/indexAddProduct.html.twig', [
-                'product_name' => $productAdd->getName(),
-                'product_count' => $productAdd->getCount(),
-                'product_factory' => $productAdd->getFactory(),
-                'product_price' => $productAdd->getPrice(),
+                'form' => $form->createView(),
+                'text' => 'Add some info about product!'
             ]
         );
     }
 
     /**
-     * @Route("/product/add/{id}", name="product_add_problem", methods={"GET"})
+     * @Route("/product/name/search", name="product_name_search")
      */
-    public function productAddProblem(string $id): Response
+    public function productNameSearch(Request $request): Response
     {
-        return $this->render('product/index.html.twig', [
-                'product' => "Oops, you need input integer id product! You input ' . $id"
+        $product = new Products();
+
+        $form = $this->createForm(NameProductSearchType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $productGetName = $product->getName();
+            $product = $this->getDoctrine()
+                ->getRepository(Products::class)
+                ->findByExampleField($product->getName());
+
+            if (!$product) {
+                return $this->render('product/indexAddProduct.html.twig', [
+                        'form' => $form->createView(),
+                        'text' => 'Name product is not in table, Please check !'
+                    ]
+                );
+            }
+
+            return $this->render('product/resultNameSearch.html.twig', [
+                    'product_result' => $product,
+                    'product_set' => $productGetName,
+                ]
+            );
+        }
+
+        return $this->render('product/indexAddProduct.html.twig', [
+                'form' => $form->createView(),
+                'text' => 'Please input correct name product'
             ]
         );
     }
 
     /**
-     * @Route("/product/get/{id}", name="product_get", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/product/name/search/down/{slug}", name="product_sort_down")
      */
-    public function productGet(int $id): Response
+    public function productSortDown(string $slug): Response
     {
-        $productGet = $this->getDoctrine()->getRepository(Product::class)->find($id);
+        $product = new Products();
 
-        return $this->render('product/indexGetProduct.html.twig', [
-                'product_name' => $productGet->getName(),
-                'product_count' => $productGet->getCount(),
-                'product_factory' => $productGet->getFactory(),
-                'product_price' => $productGet->getPrice(),
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldNameAsc($slug);
+
+        return $this->render('product/resultNameSearch.html.twig', [
+                'product_result' => $product,
+                'product_set' => $slug,
             ]
         );
     }
 
     /**
-     * @Route("/product/get/{id}", name="product_get_error", methods={"GET"})
+     * @Route("/product/maker/search/up/{slug}", name="product_maker_sort_up")
      */
-    public function productGetError(string $id): Response
+    public function productMakerSortDown(string $slug): Response
     {
-        return $this->render('product/index.html.twig', [
-                'product' => "Oops, you need input integer id product! You input ' . $id"
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldMakerAsc($slug);
+
+        return $this->render('product/resultNameSearch.html.twig', [
+                'product_result' => $product,
+                'product_set' => $slug,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/maker/search/down/{slug}", name="product_maker_sort_down")
+     */
+    public function productMakerSortUp(string $slug): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldMakerDesc($slug);
+
+        return $this->render('product/resultNameSearch.html.twig', [
+                'product_result' => $product,
+                'product_set' => $slug,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/price/search/up/{slug}", name="product_price_sort_up")
+     */
+    public function productPriceSortDown(string $slug): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldPriceAsc($slug);
+
+        return $this->render('product/resultNameSearch.html.twig', [
+                'product_result' => $product,
+                'product_set' => $slug,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/price/search/down/{slug}", name="product_price_sort_down")
+     */
+    public function productPriceSortUp(string $slug): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldPriceDesc($slug);
+
+        return $this->render('product/resultNameSearch.html.twig', [
+                'product_result' => $product,
+                'product_set' => $slug,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/name/search/name/up/{slug}", name="product_sort_up")
+     */
+    public function productSortUp(string $slug): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldNameDesc($slug);
+
+        return $this->render('product/resultNameSearch.html.twig', [
+                'product_result' => $product,
+                'product_set' => $slug,
             ]
         );
     }
@@ -76,83 +192,193 @@ class ProductController extends AbstractController
      */
     public function productGetAll(): Response
     {
-        $productGet = $this->getDoctrine()->getRepository(Product::class)->findAll();
+        $product = $this->getDoctrine()->getRepository(Products::class)->findAll();
 
         return $this->render('product/indexGetAllProduct.html.twig', [
-                'product_all' => $productGet
+                'product_result' => $product,
+                'product_set' => '',
             ]
         );
     }
 
     /**
-     * @Route("/product/put/{id}", name="product_put", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/product/getAll/name/asc", name="product_get_all_name_asc")
      */
-    public function productPut(int $id): Response
+    public function productGetAllNameAsc(): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $product = $entityManager->getRepository(Product::class)->find($id);
+        $product = new Products();
 
-        if (!$product) {
-            return $this->render('product/indexGetProduct.html.twig', [
-                    'product_name' => 'not found',
-                    'product_count' => 'not found',
-                    'product_price' => 'not found',
-                    'product_factory' => 'not found',
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldAllNameAsc();
+
+        return $this->render('product/indexGetAllProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/getAll/name/desc", name="product_get_all_name_desc")
+     */
+    public function productGetAllNameDesc(): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldAllNameDesc();
+
+        return $this->render('product/indexGetAllProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/getAll/maker/asc", name="product_get_all_maker_asc")
+     */
+    public function productGetAllMakerAsc(): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldAllMakerAsc();
+
+        return $this->render('product/indexGetAllProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/getAll/maker/desc", name="product_get_all_maker_desc")
+     */
+    public function productGetAllMakerDesc(): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldAllMakerDesc();
+
+        return $this->render('product/indexGetAllProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/getAll/price/asc", name="product_get_all_price_asc")
+     */
+    public function productGetAllPriceAsc(): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldAllPriceAsc();
+
+        return $this->render('product/indexGetAllProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/getAll/price/desc", name="product_get_all_price_desc")
+     */
+    public function productGetAllPriceDesc(): Response
+    {
+        $product = new Products();
+
+        $product = $this->getDoctrine()
+            ->getRepository(Products::class)
+            ->findByExampleFieldAllPriceDesc();
+
+        return $this->render('product/indexGetAllProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/update", name="product_update", methods={"GET"})
+     */
+    public function productUpdate(): Response
+    {
+        $product = $this->getDoctrine()->getRepository(Products::class)->findAll();
+
+        return $this->render('product/indexUpdateSomeProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
+            ]
+        );
+    }
+
+    /**
+     * @Route("/product/update/{id}", name="product_update_id", requirements={"id"="\d+"})
+     */
+    public function productUpdateById(int $id, Request $request): Response
+    {
+        $product = $this->getDoctrine()->getRepository(Products::class)->findOneBy(['id' => $id]);
+        $form = $this->createForm(AddProductType::class, $product);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($product);
+            $entityManager->flush();
+            $product = $this->getDoctrine()->getRepository(Products::class)->findAll();
+
+            return $this->render('product/indexUpdateSomeProduct.html.twig', [
+                    'product_result' => $product,
+                    'product_set' => $id,
                 ]
             );
         }
 
-        $product->setName('milk')
-            ->setCount('199')
-            ->setFactory('CherkasuMilk')
-            ->setPrice('30');
-        $entityManager->flush();
-
-        return $this->render('product/indexGetProduct.html.twig', [
-                'product_name' => $product->getName(),
-                'product_count' => $product->getNickname(),
-                'product_factory' => $product->getAction(),
-                'product_price' => $product->getEmail(),
-            ]
-        );
-    }
-
-
-    /**
-     * @Route("/product/put/{id}", name="product_put_err", methods={"GET"})
-     */
-    public function productPutErr(string $id): Response
-    {
-        return $this->render('product/index.html.twig', [
-                'product' => "Oops, you need input integer id product! You input ' . $id"
+        return $this->render('product/indexUpdateSomeProducteById.html.twig', [
+                'form' => $form->createView(),
             ]
         );
     }
 
     /**
-     * @Route("/product/delete/{id}", name="product_delete", requirements={"id"="\d+"}, methods={"GET"})
+     * @Route("/product/delete/{id}", name="product_delete_id", requirements={"id"="\d+"}, methods={"GET"})
      */
-    public function productDelete(int $id): Response
+    public function productDeleteById(int $id): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $product = $entityManager->getRepository(Product::class)->findOneBy(['id' => $id]);
-        $entityManager->remove($product);
+        $productDelete = $entityManager->getRepository(Products::class)->findOneBy(['id' => $id]);
+        $entityManager->remove($productDelete);
         $entityManager->flush();
+        $product = $this->getDoctrine()->getRepository(Products::class)->findAll();
 
-        return $this->render('product/index.html.twig', [
-                'product' => "Product was deleted from table ' . $id"
+        return $this->render('product/indexDeleteSomeProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => $id,
             ]
         );
     }
 
-
     /**
-     * @Route("/product/delete/{id}", name="product_delete_err", methods={"GET"})
+     * @Route("/product/delete", name="product_delete", methods={"GET"})
      */
-    public function productDeleteErr(string $id): Response
+    public function productDelete(): Response
     {
-        return $this->render('product/index.html.twig', [
-                'product' => "Oops, you need input integer id product! You input ' . $id"
+        $product = $this->getDoctrine()->getRepository(Products::class)->findAll();
+
+        return $this->render('product/indexDeleteSomeProduct.html.twig', [
+                'product_result' => $product,
+                'product_set' => '',
             ]
         );
     }
@@ -163,7 +389,8 @@ class ProductController extends AbstractController
     public function index(): Response
     {
         return $this->render('product/index.html.twig', [
-                'product' => "All you need to know near"
+                'form' => 'Main product Page',
+                'text' => '',
             ]
         );
     }

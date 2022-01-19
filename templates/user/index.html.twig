@@ -3,24 +3,32 @@
 {% block title %}Hello UserController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
 
-<div class="example-wrapper">
-    <h1>Hello! ✅</h1>
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
 
-    <ul>
-        <li>Response: {{ user }}</li>
-
-    </ul>
-    <ul>
-        <li> Get all info about users: /user/getAll</li>
-        <li> Get some info about user: /user/get/{id}</li>
-        <li> Update info about user: /user/put/{id}</li>
-        <li> Insert new user : /user/post/{id}</li>
-        <li> Delete user: /user/delete/{id}</li>
-    </ul>
-</div>
+    <div class="example-wrapper">
+        <h1>User Page!</h1>
+        <h3>{{ form }}</h3>
+        <ul>
+            <h4>{{ text }}</h4>
+        </ul>
+        <ul>
+            <li><a href="{{ path('user_get_all') }}">Get all info about users</a></li>
+            <li><a href="{{ path('user_email_search') }}">Find user by Email</a></li>
+            <li><a href="{{ path('user_update') }}">Update info about user</a></li>
+            <li><a href="{{ path('user_add') }}">Add new user</a></li>
+            <li><a href="{{ path('user_delete') }}">Delete user</a></li>
+        </ul>
+    </div>
 {% endblock %}
