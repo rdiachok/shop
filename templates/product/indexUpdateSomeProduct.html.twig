@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <h1>Product Page!</h1>
+        <a href="{{ path('product_index') }}"> beck to Main Product Page </a>
+        <h3>All products:</h3>
+        {% if product_set == true %}
+            <div class="alert alert-success">
+                <h3>Was updated product id: {{ product_set }}</h3>
+            </div>
+        {% endif %}
+
+        <table>
+            <tr>
+                <th>click to update</th>
+                <th>name</th>
+                <th>maker</th>
+                <th>price</th>
+                <th>date create</th>
+                <th>date update</th>
+                <th>description</th>
+                <th>summ</th>
+            </tr>
+            {% for user_all in product_result %}
+                <tr>
+                    <td><a href="/product/update/{{ user_all.id }}">{{ user_all.id }}</a></td>
+                    <td>{{ user_all.name }}</td>
+                    <td>{{ user_all.maker }}</td>
+                    <td>{{ user_all.price }}</td>
+                    <td>{{ user_all.dateCreate |date('d-m-Y') }}</td>
+                    {% if user_all.dateUpdate %}
+                        <td>{{ user_all.dateUpdate|date('d-m-Y') }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>{{ user_all.description }}</td>
+                    <td>{{ user_all.summ }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

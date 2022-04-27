@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <h1>Order Page!</h1>
+        <a href="{{ path('order') }}"> beck to Main Order Page </a>
+        <h3>All orders:</h3>
+        {% if order_set == true %}
+            <div class="alert alert-success">
+                <h3>Was deleted order id: {{ order_set }}</h3>
+            </div>
+        {% endif %}
+
+        <table>
+            <tr>
+                <th>click to del</th>
+                <th>soller</th>
+                <th>is Paid</th>
+                <th>date Solled</th>
+            </tr>
+            {% for user_all in order_result %}
+                <tr>
+                    <td><a href="/order/delete/{{ user_all.id }}">{{ user_all.id }}</a></td>
+                    <td>{{ user_all.soller }}</td>
+                    <td>{{ user_all.isPaid }}</td>
+                    <td>{{ user_all.dateSolled |date('d-m-Y') }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

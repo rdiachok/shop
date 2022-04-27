@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ProductController!{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <h1>User Page!</h1>
+        <a href="{{ path('user_index') }}"> beck to Main Product Page </a>
+        <h3>All users:</h3>
+        {% if user_set == true %}
+            <div class="alert alert-success">
+                <h3>Was deleted user id: {{ user_set }}</h3>
+            </div>
+        {% endif %}
+
+        <table>
+            <tr>
+                <th>click to del</th>
+                <th>first name</th>
+                <th>last name</th>
+                <th>email</th>
+                <th>action</th>
+            </tr>
+            {% for user_all in user_result %}
+                <tr>
+                    <td><a href="/user/delete/{{ user_all.id }}">{{ user_all.id }}</a></td>
+                    <td>{{ user_all.firstName }}</td>
+                    <td>{{ user_all.lastName }}</td>
+                    <td>{{ user_all.email }}</td>
+                    <td>{{ user_all.action }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
