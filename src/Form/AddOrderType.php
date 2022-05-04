@@ -17,10 +17,10 @@ class AddOrderType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('soller', TextType::class, [
-                'label' => 'name soller',
+            ->add('seller', TextType::class, [
+                'label' => 'name seller',
             ])
-            ->add('dateSolled', DateType::class, [
+            ->add('dateSold', DateType::class, [
                 'label' => 'date',
             ])
             ->add('isPaid')

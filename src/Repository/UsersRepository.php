@@ -28,26 +28,15 @@ class UsersRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('u')
             ->andWhere('u.email like :val')
             ->setParameter('val', '%' . $value . '%')
-            ->orderBy('u.action', 'ASC')
-            ->setMaxResults(10)
+            ->orderBy('u.role', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-    public function sortByActionUp()
+    public function sortTableBySomeField($field, $sortBy)
     {
         return $this->createQueryBuilder('u')
-            ->orderBy('u.action', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function sortByActionDown()
-    {
-        return $this->createQueryBuilder('u')
-            ->orderBy('u.action', 'DESC')
-            ->setMaxResults(10)
+            ->orderBy('u.'.$field, $sortBy)
             ->getQuery()
             ->getResult();
     }

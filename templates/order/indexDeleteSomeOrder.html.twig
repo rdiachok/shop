@@ -30,16 +30,16 @@
         <table>
             <tr>
                 <th>click to del</th>
-                <th>soller</th>
+                <th>seller</th>
                 <th>is Paid</th>
-                <th>date Solled</th>
+                <th>date Sold</th>
             </tr>
             {% for user_all in order_result %}
                 <tr>
                     <td><a href="/order/delete/{{ user_all.id }}">{{ user_all.id }}</a></td>
-                    <td>{{ user_all.soller }}</td>
+                    <td>{{ user_all.seller }}</td>
                     <td>{{ user_all.isPaid }}</td>
-                    <td>{{ user_all.dateSolled |date('d-m-Y') }}</td>
+                    <td>{{ user_all.dateSold |date('d-m-Y') }}</td>
                 </tr>
             {% endfor %}
         </table>

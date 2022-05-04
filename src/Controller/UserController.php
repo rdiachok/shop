@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
-use App\Form\EmailUserSearchType;
+use App\FORM\SearchEmailUserType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Users;
 use App\Form\AddUserType;
+use App\Form\UserSortingByFieldType;
 
 class UserController extends AbstractController
 {
@@ -26,12 +27,13 @@ class UserController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+            $userGet = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
             return $this->render('user/index.html.twig', [
-                    'form' => 'Main Page after add new User',
-                    'text' => 'Response of registration new user, his ID: ' . $user->getId(),
-                ]
-            );
+                'user_result' => $userGet,
+                'form' => '',
+            ]
+        );
         }
 
         return $this->render('user/indexAddUser.html.twig', [
@@ -46,15 +48,13 @@ class UserController extends AbstractController
      */
     public function userEmailSearch(Request $request): Response
     {
-        $user = new Users();
-
-        $form = $this->createForm(EmailUserSearchType::class, $user);
+        $form = $this->createForm(SearchEmailUserType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->getDoctrine()
                 ->getRepository(Users::class)
-                ->findByExampleField($user->getEmail());
+                ->findByExampleField($form->get('email')->getData());
 
             if (!$user) {
                 return $this->render('user/indexAddUser.html.twig', [
@@ -74,56 +74,6 @@ class UserController extends AbstractController
         return $this->render('user/indexAddUser.html.twig', [
                 'form' => $form->createView(),
                 'text' => 'Please input correct email!'
-            ]
-        );
-    }
-
-    /**
-     * @Route("/user/action/down", name="user_sort_down", methods={"GET"})
-     */
-    public function userActionSortDown(): Response
-    {
-        $user = new Users();
-
-        $user = $this->getDoctrine()
-            ->getRepository(Users::class)
-            ->sortByActionDown();
-
-        return $this->render('user/indexGetAllUser.html.twig', [
-                'user_result' => $user,
-                'user_set' => '',
-            ]
-        );
-    }
-
-    /**
-     * @Route("/user/action/up", name="user_sort_up", methods={"GET"})
-     */
-    public function userActionSortUp(): Response
-    {
-        $user = new Users();
-
-        $user = $this->getDoctrine()
-            ->getRepository(Users::class)
-            ->sortByActionUp();
-
-        return $this->render('user/indexGetAllUser.html.twig', [
-                'user_result' => $user,
-                'user_set' => '',
-            ]
-        );
-    }
-
-    /**
-     * @Route("/user/getAll", name="user_get_all", methods={"GET"})
-     */
-    public function userGetAll(): Response
-    {
-        $userGet = $this->getDoctrine()->getRepository(Users::class)->findAll();
-
-        return $this->render('user/indexGetAllUser.html.twig', [
-                'user_result' => $userGet,
-                'user_set' => '',
             ]
         );
     }
@@ -179,10 +129,9 @@ class UserController extends AbstractController
         $userDelete = $entityManager->getRepository(Users::class)->findOneBy(['id' => $id]);
         $entityManager->remove($userDelete);
         $entityManager->flush();
-        $user = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
         return $this->render('user/indexDeleteSomeUser.html.twig', [
-                'user_result' => $user,
+                'user_result' => 'Done!',
                 'user_set' => $id,
             ]
         );
@@ -207,10 +156,50 @@ class UserController extends AbstractController
      */
     public function index(): Response
     {
+        $userGet = $this->getDoctrine()->getRepository(Users::class)->findAll();
+
         return $this->render('user/index.html.twig', [
-                'form' => 'Main user page',
-                'text' => '',
+                'user_result' => $userGet,
+                'form' => '',
             ]
         );
     }
+
+    /**
+     * @Route("/user/sorting", name="user_sorting", methods={"GET", "POST"})
+     */
+    public function userSorting(Request $request): Response
+    {
+        $userGet = $this->getDoctrine()->getRepository(Users::class)->findAll();
+        $form = $this->createForm(UserSortingByFieldType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getDoctrine()
+                ->getRepository(Users::class)
+                ->sortTableBySomeField($form->get('field')->getData(),
+                $form->get('sort')->getData());
+
+            if (!$user) {
+                return $this->render('user/indexAddUser.html.twig', [
+                        'form' => $form->createView(),
+                        'text' => 'Email is not in table, Please check !'
+                    ]
+                );
+            }
+
+            return $this->render('user/sorting.html.twig', [
+                    'form' => $form->createView(),
+                    'user_result' => $user,
+                ]
+            );
+        }
+
+        return $this->render('user/sorting.html.twig', [
+                'form' => $form->createView(),
+                'user_result' => $userGet,
+            ]
+        );
+    }
+
 }

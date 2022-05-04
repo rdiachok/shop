@@ -19,16 +19,27 @@
 
     <div class="example-wrapper">
         <h1>Order Page ✅</h1>
-        <h3>{{ form }}</h3>
-        <ul>
-            <h4>{{ text }}</h4>
-        </ul>
         <ul>
             <li><a href="{{ path('order_add') }}"> Add new order </a></li>
             <li><a href="{{ path('order_date_sold_search') }}"> Find some order </a></li>
             <li><a href="{{ path('order_update') }}"> Update order </a></li>
             <li><a href="{{ path('order_delete') }}"> Delete order </a></li>
-            <li><a href="{{ path('order_get_all') }}"> Get all info about orders </a></li>
         </ul>
+
+        <h3>All orders:</h3>
+        <table>
+            <tr>
+                <th>seller</th>
+                <th>is Paid</th>
+                <th>date Solled</th>
+            </tr>
+            {% for user_all in order_result %}
+                <tr>
+                    <td>{{ user_all.seller }}</td>
+                    <td>{{ user_all.isPaid }}</td>
+                    <td>{{ user_all.dateSold |date('d-m-Y') }}</td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 {% endblock %}

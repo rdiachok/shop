@@ -20,14 +20,16 @@ class Orders
     private $id;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
      */
-    private $soller;
+    private $seller;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="date")
      */
-    private $dateSolled;
+    private $dateSold;
 
     /**
      * @ORM\Column(type="boolean")
@@ -54,26 +56,26 @@ class Orders
         return $this->id;
     }
 
-    public function getSoller(): ?string
+    public function getSeller(): ?string
     {
-        return $this->soller;
+        return $this->seller;
     }
 
-    public function setSoller(string $soller): self
+    public function setSeller(string $seller): self
     {
-        $this->soller = $soller;
+        $this->seller = $seller;
 
         return $this;
     }
 
-    public function getDateSolled(): ?\DateTimeInterface
+    public function getDateSold(): ?\DateTimeInterface
     {
-        return $this->dateSolled;
+        return $this->dateSold;
     }
 
-    public function setDateSolled(\DateTimeInterface $dateSolled): self
+    public function setDateSold(\DateTimeInterface $dateSold): self
     {
-        $this->dateSolled = $dateSolled;
+        $this->dateSold = $dateSold;
 
         return $this;
     }

@@ -14,6 +14,11 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AddUserType extends AbstractType
 {
+    const ADMIN = 'admin';
+    const MANAGER = 'manager';
+    const SALESMAN = 'salesman';
+    const CUSTOMER = 'customer';
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -26,13 +31,13 @@ class AddUserType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'Set your Last name',
             ])
-            ->add('action', ChoiceType::class, [
-                'label' => 'Chouse one action for user',
+            ->add('role', ChoiceType::class, [
+                'label' => 'Chouse one role for user',
                 'choices' => [
-                    'admin' => 'admin',
-                    'manager' => 'manager',
-                    'salesman' => 'salesman',
-                    'customer' => 'customer',
+                    self::ADMIN => self::ADMIN ,
+                    self::MANAGER => self::MANAGER,
+                    self::SALESMAN => self::SALESMAN,
+                    self::CUSTOMER => self::CUSTOMER,
                 ],
             ])
             ->add('save', SubmitType::class, ['label' => 'Save']);

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}Hello OrderController!{% endblock %}
 
 {% block body %}
     <style>
@@ -19,21 +19,19 @@
 
     <div class="example-wrapper">
         <h1>Order Page!</h1>
-
-        <a href="{{ path('order') }}"> beck to Main Order Page </a>
-
-        <h4>Response is:</h4>
+            {{ form(form) }}
+        <h3>All orders:</h3>
         <table>
             <tr>
                 <th>seller</th>
                 <th>is Paid</th>
                 <th>date Sold</th>
             </tr>
-            {% for order_set in order_result %}
+            {% for user_all in order_result %}
                 <tr>
-                    <td>{{ order_set.seller }}</td>
-                    <td>{{ order_set.isPaid }}</td>
-                    <td>{{ order_set.dateSold |date('d-m-Y') }}</td>
+                    <td>{{ user_all.seller }}</td>
+                    <td>{{ user_all.isPaid }}</td>
+                    <td>{{ user_all.dateSold |date('d-m-Y') }}</td>
                 </tr>
             {% endfor %}
         </table>

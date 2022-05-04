@@ -19,17 +19,7 @@
 
     <div class="example-wrapper">
         <h1>Product Page!</h1>
-        <h3>{{ form }}</h3>
-        <ul>
-            <h4>{{ text }}</h4>
-        </ul>
-        <ul>
-            <li><a href="{{ path('product_add') }}"> Add new product </a></li>
-            <li><a href="{{ path('product_name_search') }}"> Find some product </a></li>
-            <li><a href="{{ path('product_update') }}"> Update product </a></li>
-            <li><a href="{{ path('product_delete') }}"> Delete product </a></li>
-        </ul>
-
+            {{ form(form) }}
         <h3>All products:</h3>
         <table>
             <tr>
@@ -59,4 +49,3 @@
         </table>
     </div>
 {% endblock %}
-

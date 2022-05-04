@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Orders;
 use App\Form\AddOrderType;
-use App\Form\SoldDateSearchType;
+use App\Form\OrderFindByDateType;
+use App\Form\OrderSortingByFieldType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,9 +18,11 @@ class OrderController extends AbstractController
      */
     public function index(): Response
     {
+        $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
+
         return $this->render('order/index.html.twig', [
-                'form' => 'Main order page',
-                'text' => '',
+                'order_result' => $orderGet,
+                'order_set' => '',
             ]
         );
     }
@@ -42,6 +45,7 @@ class OrderController extends AbstractController
             return $this->render('order/index.html.twig', [
                     'form' => 'Main Page after add new Order',
                     'text' => 'Response of registration new order, his ID: ' . $order->getId(),
+                    'order_result' => '',
                 ]
             );
         }
@@ -56,16 +60,18 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/dateSold/search", name="order_date_sold_search", methods={"GET", "POST"})
      */
-    public function orderDateSoldSearch(Request $request): Response
+    public function orderDateSoldSearch(Request $request)
     {
-        $order = new Orders();
-        $form = $this->createForm(SoldDateSearchType::class, $order);
+        $form = $this->createForm(OrderFindByDateType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $dateFrom = $form->get('dateFrom')->getData();
+            $dateTo = $form->get('dateTo')->getData();
+
             $order = $this->getDoctrine()
                 ->getRepository(Orders::class)
-                ->findByExampleField($order->getDateSolled());
+                ->findByExampleField($dateFrom, $dateTo);
 
             if (!$order) {
                 return $this->render('order/indexAddOrder.html.twig', [
@@ -77,7 +83,6 @@ class OrderController extends AbstractController
 
             return $this->render('order/resultSoldDateSearch.html.twig', [
                     'order_result' => $order,
-                    'text' => 'Some info'
                 ]
             );
         }
@@ -85,56 +90,6 @@ class OrderController extends AbstractController
         return $this->render('order/indexAddOrder.html.twig', [
                 'form' => $form->createView(),
                 'text' => 'Please input correct date!'
-            ]
-        );
-    }
-
-    /**
-     * @Route("/order/getAll", name="order_get_all", methods={"GET"})
-     */
-    public function orderGetAll(): Response
-    {
-        $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
-
-        return $this->render('order/indexGetAllOrder.html.twig', [
-                'order_result' => $orderGet,
-                'order_set' => '',
-            ]
-        );
-    }
-
-    /**
-     * @Route("/order/sold/date/up", name="order_sold_date_sort_up", methods={"GET"})
-     */
-    public function orderSoldSateSortUp(): Response
-    {
-        $order = new Orders();
-
-        $order = $this->getDoctrine()
-            ->getRepository(Orders::class)
-            ->findByExampleFieldAllSoldDateUp();
-
-        return $this->render('order/indexGetAllOrder.html.twig', [
-                'order_result' => $order,
-                'order_set' => '',
-            ]
-        );
-    }
-
-    /**
-     * @Route("/order/sold/date/down", name="order_sold_date_sort_down", methods={"GET"})
-     */
-    public function orderSoldSateSortDown(): Response
-    {
-        $order = new Orders();
-
-        $order = $this->getDoctrine()
-            ->getRepository(Orders::class)
-            ->findByExampleFieldAllSoldDateDown();
-
-        return $this->render('order/indexGetAllOrder.html.twig', [
-                'order_result' => $order,
-                'order_set' => '',
             ]
         );
     }
@@ -209,6 +164,44 @@ class OrderController extends AbstractController
         return $this->render('order/indexDeleteSomeOrder.html.twig', [
                 'order_result' => $order,
                 'order_set' => $id,
+            ]
+        );
+    }
+
+     /**
+     * @Route("/order/sorting", name="order_sorting", methods={"GET", "POST"})
+     */
+    public function orderSorting(Request $request): Response
+    {
+        $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
+        $form = $this->createForm(OrderSortingByFieldType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $field = $form->get('field')->getData();
+            $sortBy = $form->get('sort')->getData();
+            $order= $this->getDoctrine()
+                ->getRepository(Orders::class)
+                ->sortTableBySomeField($field, $sortBy);
+
+            if (!$order) {
+                return $this->render('order/indexAddOrder.html.twig', [
+                        'form' => $form->createView(),
+                        'text' => 'Order is not in table, Please check !'
+                    ]
+                );
+            }
+
+            return $this->render('order/sorting.html.twig', [
+                    'form' => $form->createView(),
+                    'order_result' => $order,
+                ]
+            );
+        }
+
+        return $this->render('order/sorting.html.twig', [
+                'form' => $form->createView(),
+                'order_result' => $orderGet,
             ]
         );
     }
