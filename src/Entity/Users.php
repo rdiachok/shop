@@ -45,7 +45,7 @@ class Users
 
     /**
      * @Assert\NotBlank
-     * @ORM\Column(type="string", columnDefinition="enum('admin', 'manager', 'salesman', 'customer')")
+     * @ORM\Column(type="string", columnDefinition="enum('admin', 'manager', 'salesman', 'customer', 'superAdmin')")
      */
     private $role;
 
