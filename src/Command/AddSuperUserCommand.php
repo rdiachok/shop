@@ -21,9 +21,9 @@ class AddSuperUserCommand extends Command
     const SUPER_ADMIN = 'superAdmin';
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private Validator $validator,
-        private UsersRepository $users
+        //private EntityManagerInterface $entityManager,
+        //private Validator $validator,
+        //private UsersRepository $users
     ) {
         parent::__construct();
     }
