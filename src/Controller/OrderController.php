@@ -2,27 +2,53 @@
 
 namespace App\Controller;
 
+use App\Entity\OrderItems;
 use App\Entity\Orders;
+use App\Entity\Users;
 use App\Form\AddOrderType;
 use App\Form\OrderFindByDateType;
 use App\Form\OrderSortingByFieldType;
+use App\Form\OrderDownloadPDFType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Services\pdfServices;
 
 class OrderController extends AbstractController
 {
+    const ORDER_PDF_ROUTE = '/order/orderInfo.html.twig';
+    const ORDER_ITEMS_ROUTE = '/order/items.html.twig';
+    const ORDER_PDF_NAME = 'order';
+    const ORDER_PDF_NAME_ALL = 'allOrders';
+    const ORDER_ITEMS_NAME = 'allOrderItems';
+
     /**
-     * @Route("/order", name="order", methods={"GET"})
+     * @Route("/order", name="order", methods={"GET", "POST"})
      */
-    public function index(): Response
+    public function index(Request $request, pdfServices $pdfServices): Response
     {
         $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
 
-        return $this->render('order/index.html.twig', [
+        $form = $this->createForm(OrderDownloadPDFType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rout = self::ORDER_PDF_ROUTE;
+            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, self::ORDER_PDF_NAME_ALL);
+
+            if (!$getResult) {
+                return new Response("Something is wrong with service PDF");
+            } else {
+                return new Response("The PDF file has been succesfully generated !");
+            }
+        }
+
+        return $this->render(
+            'order/index.html.twig',
+            [
                 'order_result' => $orderGet,
-                'order_set' => '',
+                'form' => $form->createView(),
             ]
         );
     }
@@ -30,8 +56,10 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/add/", name="order_add", methods={"GET", "POST"})
      */
-    public function orderAdd(Request $request): Response
+    public function orderAdd(Request $request, pdfServices $pdfServices): Response
     {
+        $rout = self::ORDER_PDF_ROUTE;
+
         $order = new Orders();
 
         $form = $this->createForm(AddOrderType::class, $order);
@@ -42,15 +70,22 @@ class OrderController extends AbstractController
             $entityManager->persist($order);
             $entityManager->flush();
 
-            return $this->render('order/index.html.twig', [
-                    'form' => 'Main Page after add new Order',
-                    'text' => 'Response of registration new order, his ID: ' . $order->getId(),
-                    'order_result' => '',
-                ]
-            );
+            //PDF render
+            $orderGet = $this->getDoctrine()
+                ->getRepository(Orders::class)
+                ->findBy(['id' => $order->getId()]);
+            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
+
+            if (!$getResult) {
+                return new Response("Something is wrong with service PDF");
+            } else {
+                return new Response("The PDF file has been succesfully generated !");
+            }
         }
 
-        return $this->render('order/indexAddOrder.html.twig', [
+        return $this->render(
+            'order/indexAddOrder.html.twig',
+            [
                 'form' => $form->createView(),
                 'text' => 'Add some info about order!'
             ]
@@ -74,20 +109,26 @@ class OrderController extends AbstractController
                 ->findByExampleField($dateFrom, $dateTo);
 
             if (!$order) {
-                return $this->render('order/indexAddOrder.html.twig', [
+                return $this->render(
+                    'order/indexAddOrder.html.twig',
+                    [
                         'form' => $form->createView(),
                         'text' => 'Order is not in table, Please check !'
                     ]
                 );
             }
 
-            return $this->render('order/resultSoldDateSearch.html.twig', [
+            return $this->render(
+                'order/resultSoldDateSearch.html.twig',
+                [
                     'order_result' => $order,
                 ]
             );
         }
 
-        return $this->render('order/indexAddOrder.html.twig', [
+        return $this->render(
+            'order/indexAddOrder.html.twig',
+            [
                 'form' => $form->createView(),
                 'text' => 'Please input correct date!'
             ]
@@ -101,7 +142,9 @@ class OrderController extends AbstractController
     {
         $order = $this->getDoctrine()->getRepository(Orders::class)->findAll();
 
-        return $this->render('order/indexUpdateSomeOrder.html.twig', [
+        return $this->render(
+            'order/indexUpdateSomeOrder.html.twig',
+            [
                 'order_result' => $order,
                 'order_set' => '',
             ]
@@ -111,8 +154,10 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/update/{id}", name="order_update_id", requirements={"id"="\d+"}, methods={"GET", "POST"})
      */
-    public function orderUpdateById(int $id, Request $request): Response
+    public function orderUpdateById(int $id, Request $request, pdfServices $pdfServices): Response
     {
+        $rout = self::ORDER_PDF_ROUTE;
+
         $order = $this->getDoctrine()->getRepository(Orders::class)->findOneBy(['id' => $id]);
         $form = $this->createForm(AddOrderType::class, $order);
         $form->handleRequest($request);
@@ -121,16 +166,25 @@ class OrderController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($order);
             $entityManager->flush();
-            $order = $this->getDoctrine()->getRepository(Orders::class)->findAll();
 
-            return $this->render('order/indexUpdateSomeOrder.html.twig', [
-                    'order_result' => $order,
-                    'order_set' => $id,
-                ]
-            );
+            //PDF render
+            $orderGet = $this->getDoctrine()
+                ->getRepository(Orders::class)
+                ->findBy(['id' => $order->getId()]);
+            dump($orderGet);
+
+            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
+
+            if (!$getResult) {
+                return new Response("Something is wrong with service PDF");
+            } else {
+                return new Response("The PDF file has been succesfully generated !");
+            }
         }
 
-        return $this->render('order/indexUpdateSomeOrderById.html.twig', [
+        return $this->render(
+            'order/indexUpdateSomeOrderById.html.twig',
+            [
                 'form' => $form->createView(),
             ]
         );
@@ -143,7 +197,9 @@ class OrderController extends AbstractController
     {
         $order = $this->getDoctrine()->getRepository(Orders::class)->findAll();
 
-        return $this->render('order/indexDeleteSomeOrder.html.twig', [
+        return $this->render(
+            'order/indexDeleteSomeOrder.html.twig',
+            [
                 'order_result' => $order,
                 'order_set' => '',
             ]
@@ -161,50 +217,88 @@ class OrderController extends AbstractController
         $entityManager->flush();
         $order = $this->getDoctrine()->getRepository(Orders::class)->findAll();
 
-        return $this->render('order/indexDeleteSomeOrder.html.twig', [
+        return $this->render(
+            'order/indexDeleteSomeOrder.html.twig',
+            [
                 'order_result' => $order,
                 'order_set' => $id,
             ]
         );
     }
 
-     /**
+    /**
      * @Route("/order/sorting", name="order_sorting", methods={"GET", "POST"})
      */
     public function orderSorting(Request $request): Response
     {
         $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
+
         $form = $this->createForm(OrderSortingByFieldType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $field = $form->get('field')->getData();
             $sortBy = $form->get('sort')->getData();
-            $order= $this->getDoctrine()
+            $order = $this->getDoctrine()
                 ->getRepository(Orders::class)
                 ->sortTableBySomeField($field, $sortBy);
 
             if (!$order) {
-                return $this->render('order/indexAddOrder.html.twig', [
+                return $this->render(
+                    'order/indexAddOrder.html.twig',
+                    [
                         'form' => $form->createView(),
                         'text' => 'Order is not in table, Please check !'
                     ]
                 );
             }
 
-            return $this->render('order/sorting.html.twig', [
+            return $this->render(
+                'order/sorting.html.twig',
+                [
                     'form' => $form->createView(),
                     'order_result' => $order,
                 ]
             );
         }
 
-        return $this->render('order/sorting.html.twig', [
+        return $this->render(
+            'order/sorting.html.twig',
+            [
                 'form' => $form->createView(),
                 'order_result' => $orderGet,
             ]
         );
     }
+
+    /**
+     * @Route("/order/items", name="order_items", methods={"GET", "POST"})
+     */
+    public function orderItems(Request $request, pdfServices $pdfServices): Response
+    {
+        $orderGet = $this->getDoctrine()->getRepository(OrderItems::class)->findAll();
+
+        $form = $this->createForm(OrderDownloadPDFType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rout = self::ORDER_ITEMS_ROUTE;
+
+            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, self::ORDER_ITEMS_NAME);
+
+            if (!$getResult) {
+                return new Response("Something is wrong with service PDF");
+            } else {
+                return new Response("The PDF file has been succesfully generated !");
+            }
+        }
+
+        return $this->render(
+            'orderItems/index.html.twig',
+            [
+                'order_result' => $orderGet,
+                'form' => $form->createView(),
+            ]
+        );
+    }
 }
-
-
