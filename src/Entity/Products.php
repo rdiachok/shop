@@ -6,6 +6,7 @@ use App\Repository\ProductsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductsRepository::class)
@@ -20,21 +21,26 @@ class Products
     private $id;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="string", length=100)
      */
     private $maker;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="integer")
      */
     private $price;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="date")
      */
     private $dateCreate;
@@ -50,6 +56,7 @@ class Products
     private $description;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="integer")
      */
     private $summ;

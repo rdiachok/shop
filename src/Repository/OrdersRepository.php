@@ -23,29 +23,21 @@ class OrdersRepository extends ServiceEntityRepository
      * @return Orders[] Returns an array of Orders objects
      */
 
-    public function findByExampleField($value)
+    public function findByExampleField($dateFrom, $dateTo)
     {
         return $this->createQueryBuilder('o')
-            ->andWhere('o.dateSolled = :val')
-            ->setParameter('val', $value)
+            ->andWhere('o.dateSold BETWEEN :dateFrom AND :dateTo')
+            ->setParameter('dateFrom', $dateFrom->format('Y-m-d'))
+            ->setParameter('dateTo', $dateTo->format('Y-m-d'))
             ->orderBy('o.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
 
-    public function findByExampleFieldAllSoldDateUp()
+    public function sortTableBySomeField($field, $sortBy)
     {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.dateSolled', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByExampleFieldAllSoldDateDown()
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.dateSolled', 'DESC')
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.'.$field, $sortBy)
             ->getQuery()
             ->getResult();
     }

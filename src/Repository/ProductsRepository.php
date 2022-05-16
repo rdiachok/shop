@@ -28,7 +28,6 @@ class ProductsRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -39,7 +38,6 @@ class ProductsRepository extends ServiceEntityRepository
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
             ->orderBy('p.name', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -50,7 +48,6 @@ class ProductsRepository extends ServiceEntityRepository
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
             ->orderBy('p.name', 'DESC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -61,7 +58,6 @@ class ProductsRepository extends ServiceEntityRepository
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
             ->orderBy('p.maker', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -72,7 +68,6 @@ class ProductsRepository extends ServiceEntityRepository
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
             ->orderBy('p.maker', 'DESC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -83,7 +78,6 @@ class ProductsRepository extends ServiceEntityRepository
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
             ->orderBy('p.price', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
@@ -94,55 +88,14 @@ class ProductsRepository extends ServiceEntityRepository
             ->andWhere('p.name like :val')
             ->setParameter('val', '%' . $value . '%')
             ->orderBy('p.price', 'DESC')
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
     }
 
-    public function findByExampleFieldAllNameAsc()
+    public function sortTableBySomeField($field, $sortBy)
     {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.name', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByExampleFieldAllNameDesc()
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.name', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByExampleFieldAllMakerAsc()
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.maker', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByExampleFieldAllMakerDesc()
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.maker', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByExampleFieldAllPriceAsc()
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.price', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByExampleFieldAllPriceDesc()
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.price', 'DESC')
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.'.$field, $sortBy)
             ->getQuery()
             ->getResult();
     }

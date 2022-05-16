@@ -21,6 +21,8 @@ class Users
     private $id;
 
     /**
+     * @Assert\NotBlank
+     * @Assert\Email(message = "The email '{{ value }}' is not a valid email.")
      * @ORM\Column(type="string", unique=true, length=100)
      * @Assert\Length(min = 6, max = 50, minMessage = "Email must be at least {{ limit }} characters long", maxMessage = "Email cannot be longer than {{ limit }} characters")
      */
@@ -28,21 +30,24 @@ class Users
     private $email;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
      * @Assert\Length(min = 2, max = 50, minMessage = "Name must be at least {{ limit }} characters long", maxMessage = "Name cannot be longer than {{ limit }} characters")
      */
     private $firstName;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="string", length=50)
      * @Assert\Length(min = 2, max = 50, minMessage = "Last name must be at least {{ limit }} characters long", maxMessage = "Last name cannot be longer than {{ limit }} characters")
      */
     private $lastName;
 
     /**
+     * @Assert\NotBlank
      * @ORM\Column(type="string", columnDefinition="enum('admin', 'manager', 'salesman', 'customer')")
      */
-    private $action;
+    private $role;
 
 
     /**)
@@ -103,14 +108,14 @@ class Users
         return $this;
     }
 
-    public function getAction(): ?string
+    public function getRole(): ?string
     {
-        return $this->action;
+        return $this->role;
     }
 
-    public function setAction(string $action): self
+    public function setRole(string $role): self
     {
-        $this->action = $action;
+        $this->role = $role;
 
         return $this;
     }

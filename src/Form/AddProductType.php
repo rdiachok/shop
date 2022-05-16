@@ -53,43 +53,6 @@ class AddProductType extends AbstractType
                 'label' => 'choose your id',
             ])
             ->add('save', SubmitType::class, ['label' => 'Save']);
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $product = $event->getData();
-            $form = $event->getForm();
-            if (!$product || null === $product->getId()) {
-                $form->add('name', TextType::class, [
-                    'label' => 'name product',
-                ])
-                    ->add('maker', TextType::class, [
-                        'label' => 'name maker',
-                    ])
-                    ->add('price', IntegerType::class, [
-                        'label' => 'price',
-                    ])
-                    ->add('description', TextType::class, [
-                        'label' => 'some discription',
-                        'required' => false,
-                    ])
-                    ->add('dateCreate', DateType::class, [
-                        'label' => 'date',
-                    ])
-                    ->add('dateUpdate', DateType::class, [
-                        'label' => 'date update',
-                        'required' => false,
-                    ])
-                    ->add('summ', IntegerType::class, [
-                        'label' => 'summ',
-                    ])
-                    ->add('userAdd', EntityType::class, [
-                        'class' => Users::class,
-                        'choice_label' => function ($id) {
-                            return $id->getId();
-                        },
-                        'label' => 'choose your id',
-                    ])
-                    ->add('save', SubmitType::class, ['label' => 'Save']);
-            }
-        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -23,18 +23,15 @@
         <h3>All orders:</h3>
         <table>
             <tr>
-                <th>soller</th>
+                <th>seller</th>
                 <th>is Paid</th>
-                <th>date Solled
-                    <a href="{{ path('order_sold_date_sort_up') }}"> ↑ </a>
-                    <a href="{{ path('order_sold_date_sort_down') }}"> ↓ </a>
-                </th>
+                <th>date Sold</th>
             </tr>
             {% for user_all in order_result %}
                 <tr>
-                    <td>{{ user_all.soller }}</td>
+                    <td>{{ user_all.seller }}</td>
                     <td>{{ user_all.isPaid }}</td>
-                    <td>{{ user_all.dateSolled |date('d-m-Y') }}</td>
+                    <td>{{ user_all.dateSold |date('d-m-Y') }}</td>
                 </tr>
             {% endfor %}
         </table>

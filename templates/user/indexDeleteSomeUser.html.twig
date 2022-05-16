@@ -33,7 +33,7 @@
                 <th>first name</th>
                 <th>last name</th>
                 <th>email</th>
-                <th>action</th>
+                <th>role</th>
             </tr>
             {% for user_all in user_result %}
                 <tr>
@@ -41,7 +41,7 @@
                     <td>{{ user_all.firstName }}</td>
                     <td>{{ user_all.lastName }}</td>
                     <td>{{ user_all.email }}</td>
-                    <td>{{ user_all.action }}</td>
+                    <td>{{ user_all.role }}</td>
                 </tr>
             {% endfor %}
         </table>
