@@ -24,16 +24,24 @@ class OrderController extends AbstractController
     const ORDER_ITEMS_NAME = 'allOrderItems';
 
     /**
-     * @Route("/order", name="order", methods={"GET"})
+     * @Route("/order", name="order", methods={"GET", "POST"})
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
+
+        $form = $this->createForm(OrderDownloadPDFType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->redirectToRoute('order_add_pdf');
+        }
 
         return $this->render(
             'order/index.html.twig',
             [
                 'order_result' => $orderGet,
+                'form' => $form->createView(),
             ]
         );
     }
@@ -42,6 +50,39 @@ class OrderController extends AbstractController
      * @Route("/order/add/", name="order_add", methods={"GET", "POST"})
      */
     public function orderAdd(Request $request, pdfServices $pdfServices): Response
+    {
+        $order = new Orders();
+
+        $form = $this->createForm(AddOrderType::class, $order);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($order);
+            $entityManager->flush();
+
+            return $this->render(
+                'order/indexAddOrder.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'text' => 'Order complite'
+                ]
+            );
+        }
+
+        return $this->render(
+            'order/indexAddOrder.html.twig',
+            [
+                'form' => $form->createView(),
+                'text' => 'Add some info about order!'
+            ]
+        );
+    }
+
+    /**
+     * @Route("/order/add/pdf", name="order_add_pdf", methods={"GET", "POST"})
+     */
+    public function orderAddPDF(Request $request, pdfServices $pdfServices): Response
     {
         $rout = self::ORDER_PDF_ROUTE;
 
