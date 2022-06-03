@@ -1,50 +1,67 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Hello UserController!
+	Hello UserController!
 {% endblock %}
 
 {% block body %}
-    <style>
-        .example-wrapper {
-            margin: 1em auto;
-            max-width: 800px;
-            width: 95%;
-            font: 18px/1.5 sans-serif;
-        }
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
 
-        .example-wrapper code {
-            background: #F5F5F5;
-            padding: 2px 6px;
-        }
-    </style>
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
 
-    <div class="example-wrapper">
-        <table>
-            <tr>
-                <th>
-                    seller
-                </th>
-                <th>
-                    is Paid
-                </th>
-                <th>
-                    date Solled
-                </th>
-            </tr>
-            {% for user_all in order_result %}
-                <tr>
-                    <td>
-                        {{ user_all.seller }}
-                    </td>
-                    <td>
-                        {{ user_all.isPaid }}
-                    </td>
-                    <td>
-                        {{ user_all.dateSold |date('d-m-Y') }}
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
+	<div class="example-wrapper">
+		<table>
+			<tr>
+				<th>
+					id
+
+
+				</th>
+				<th>
+					Item
+
+
+				</th>
+				<th>
+					Quantity
+
+
+				</th>
+				<th>
+					Email
+
+
+				</th>
+			</tr>
+			{% for order_get in order_result %}
+				{% for orderitems_get in order_get.orderItems %}
+					<tr>
+						<td>
+							{{ orderitems_get.id }}
+						</td>
+						<td>
+							{{ orderitems_get.product.name}}
+						</td>
+						<td>
+							{{ orderitems_get.quantity}}
+						</td>
+						<td>
+							{{ orderitems_get.orderId.customer.email }}
+						</td>
+					</tr>
+				{% endfor %}
+			{% endfor %}
+
+		</table>
+	</div>
 {% endblock %}

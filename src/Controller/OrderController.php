@@ -24,31 +24,16 @@ class OrderController extends AbstractController
     const ORDER_ITEMS_NAME = 'allOrderItems';
 
     /**
-     * @Route("/order", name="order", methods={"GET", "POST"})
+     * @Route("/order", name="order", methods={"GET"})
      */
-    public function index(Request $request, pdfServices $pdfServices): Response
+    public function index(): Response
     {
         $orderGet = $this->getDoctrine()->getRepository(Orders::class)->findAll();
-
-        $form = $this->createForm(OrderDownloadPDFType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $rout = self::ORDER_PDF_ROUTE;
-            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, self::ORDER_PDF_NAME_ALL);
-
-            if (!$getResult) {
-                return new Response("Something is wrong with service PDF");
-            } else {
-                return new Response("The PDF file has been succesfully generated !");
-            }
-        }
 
         return $this->render(
             'order/index.html.twig',
             [
                 'order_result' => $orderGet,
-                'form' => $form->createView(),
             ]
         );
     }
@@ -74,13 +59,16 @@ class OrderController extends AbstractController
             $orderGet = $this->getDoctrine()
                 ->getRepository(Orders::class)
                 ->findBy(['id' => $order->getId()]);
-            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
 
-            if (!$getResult) {
-                return new Response("Something is wrong with service PDF");
-            } else {
-                return new Response("The PDF file has been succesfully generated !");
-            }
+            $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
+
+            return $this->render(
+                'order/indexAddOrder.html.twig',
+                [
+                    'form' => $form->createView(),
+                    'text' => 'Order generate to PDF'
+                ]
+            );
         }
 
         return $this->render(
@@ -171,15 +159,15 @@ class OrderController extends AbstractController
             $orderGet = $this->getDoctrine()
                 ->getRepository(Orders::class)
                 ->findBy(['id' => $order->getId()]);
-            dump($orderGet);
 
-            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
+            $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
 
-            if (!$getResult) {
-                return new Response("Something is wrong with service PDF");
-            } else {
-                return new Response("The PDF file has been succesfully generated !");
-            }
+            return $this->render(
+                'order/indexUpdateSomeOrderById.html.twig',
+                [
+                    'form' => $form->createView(),
+                ]
+            );
         }
 
         return $this->render(
@@ -267,37 +255,6 @@ class OrderController extends AbstractController
             [
                 'form' => $form->createView(),
                 'order_result' => $orderGet,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/order/items", name="order_items", methods={"GET", "POST"})
-     */
-    public function orderItems(Request $request, pdfServices $pdfServices): Response
-    {
-        $orderGet = $this->getDoctrine()->getRepository(OrderItems::class)->findAll();
-
-        $form = $this->createForm(OrderDownloadPDFType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $rout = self::ORDER_ITEMS_ROUTE;
-
-            $getResult = $pdfServices->getServisesPDF($orderGet, $rout, self::ORDER_ITEMS_NAME);
-
-            if (!$getResult) {
-                return new Response("Something is wrong with service PDF");
-            } else {
-                return new Response("The PDF file has been succesfully generated !");
-            }
-        }
-
-        return $this->render(
-            'orderItems/index.html.twig',
-            [
-                'order_result' => $orderGet,
-                'form' => $form->createView(),
             ]
         );
     }

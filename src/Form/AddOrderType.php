@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\OrderItems;
 use App\Entity\Orders;
 use App\Entity\Users;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -30,6 +31,14 @@ class AddOrderType extends AbstractType
                     return $id->getId();
                 },
                 'label' => 'choose your id',
+            ])
+            ->add('orderItems', EntityType::class, [
+                'class' => OrderItems::class,
+                'multiple' => true,
+                'choice_label' => function ($id) {
+                    return $id->getId();
+                },
+                'label' => 'choose your order items',
             ])
             ->add('save', SubmitType::class, ['label' => 'Save']);;
     }

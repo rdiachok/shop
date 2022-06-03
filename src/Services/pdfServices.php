@@ -21,7 +21,7 @@ class pdfServices
         $this->appKernel = $appKernel;
     }
 
-    public function getServisesPDF($orderGet, $rout, $id): Response
+    public function getServisesPDF($orderGet, $rout, $id)
     {
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
@@ -56,7 +56,5 @@ class pdfServices
         // Write file to the desired path
         file_put_contents($pdfFilepath, $output);
 
-        // Send some text response
-        return new Response("The PDF file has been succesfully generated !");
     }
 }
