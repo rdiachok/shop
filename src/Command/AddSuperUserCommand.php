@@ -5,14 +5,12 @@ namespace App\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Entity\Users;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
-use App\Utils\Validator;
 
 class AddSuperUserCommand extends Command
 {
@@ -21,9 +19,8 @@ class AddSuperUserCommand extends Command
     const SUPER_ADMIN = 'superAdmin';
 
     public function __construct(
-        //private EntityManagerInterface $entityManager,
-        //private Validator $validator,
-        //private UsersRepository $users
+        private EntityManagerInterface $entityManager,
+        private UsersRepository $users
     ) {
         parent::__construct();
     }
@@ -34,8 +31,7 @@ class AddSuperUserCommand extends Command
             ->setDescription(self::$defaultDescription)
             ->addArgument('firstName', InputArgument::REQUIRED, 'The user name of the user.')
             ->addArgument('lastName', InputArgument::REQUIRED, 'The last name of the user.')
-            ->addArgument('email', InputArgument::REQUIRED, 'The email of the user.')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description');
+            ->addArgument('email', InputArgument::REQUIRED, 'The email of the user.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -46,7 +42,7 @@ class AddSuperUserCommand extends Command
         $email = $input->getArgument('email');
 
         // make sure to validate the user data is correct
-        $this->validateUserData($firstName, $lastName, $email);
+        $this->validateUserData($email);
 
         // create the user
         $user = new Users();
@@ -67,13 +63,8 @@ class AddSuperUserCommand extends Command
         return 0;
     }
 
-    private function validateUserData($firstName, $lastName, $email): void
+    private function validateUserData($email): void
     {
-        // validate password and email if is not this input means interactive.
-        $this->validator->validateFirstName($firstName);
-        $this->validator->validateLastName($lastName);
-        $this->validator->validateEmail($email);
-
         // check if a user with the same email already exists.
         $existingEmail = $this->users->findOneBy(['email' => $email]);
 

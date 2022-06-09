@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Services\pdfServices;
+use App\Services\PDFServices;
 
 class OrderController extends AbstractController
 {
@@ -49,7 +49,7 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/add/", name="order_add", methods={"GET", "POST"})
      */
-    public function orderAdd(Request $request, pdfServices $pdfServices): Response
+    public function orderAdd(Request $request): Response
     {
         $order = new Orders();
 
@@ -82,7 +82,7 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/add/pdf", name="order_add_pdf", methods={"GET", "POST"})
      */
-    public function orderAddPDF(Request $request, pdfServices $pdfServices): Response
+    public function orderAddPDF(Request $request, PDFServices $PDFServices): Response
     {
         $rout = self::ORDER_PDF_ROUTE;
 
@@ -101,7 +101,7 @@ class OrderController extends AbstractController
                 ->getRepository(Orders::class)
                 ->findBy(['id' => $order->getId()]);
 
-            $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
+            $PDFServices->getServisesPDF($orderGet, $rout, $order->getId());
 
             return $this->render(
                 'order/indexAddOrder.html.twig',
@@ -183,7 +183,7 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/update/{id}", name="order_update_id", requirements={"id"="\d+"}, methods={"GET", "POST"})
      */
-    public function orderUpdateById(int $id, Request $request, pdfServices $pdfServices): Response
+    public function orderUpdateById(int $id, Request $request, PDFServices $PDFServices): Response
     {
         $rout = self::ORDER_PDF_ROUTE;
 
@@ -201,7 +201,7 @@ class OrderController extends AbstractController
                 ->getRepository(Orders::class)
                 ->findBy(['id' => $order->getId()]);
 
-            $pdfServices->getServisesPDF($orderGet, $rout, $order->getId());
+            $PDFServices->getServisesPDF($orderGet, $rout, $order->getId());
 
             return $this->render(
                 'order/indexUpdateSomeOrderById.html.twig',

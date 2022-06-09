@@ -13,6 +13,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Users
 {
+    const ADMIN = 'admin';
+    const MANAGER = 'manager';
+    const SALESMAN = 'salesman';
+    const CUSTOMER = 'customer';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -180,5 +185,17 @@ class Users
         }
 
         return $this;
+    }
+
+    public function getRoleUserFixtures($randomId): ?string
+    {
+        $boxRole = [
+            self::ADMIN,
+            self::MANAGER,
+            self::SALESMAN,
+            self::CUSTOMER
+        ];
+
+        return $boxRole[$randomId];
     }
 }
