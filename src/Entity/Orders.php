@@ -47,6 +47,11 @@ class Orders
      */
     private $orderItems;
 
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $pdfRout;
+
     public function __construct()
     {
         $this->orderItems = new ArrayCollection();
@@ -131,6 +136,18 @@ class Orders
                 $orderItem->setOrderId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPdfRout(): ?string
+    {
+        return $this->pdfRout;
+    }
+
+    public function setPdfRout(string $pdfRout): self
+    {
+        $this->pdfRout = $pdfRout;
 
         return $this;
     }

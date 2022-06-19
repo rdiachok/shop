@@ -11,7 +11,8 @@ class OrderItemsFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        for ($i = 0; $i < 8; $i++) { {
+        for ($i = 0; $i < 8; $i++) { 
+            {
                 $orderItems = new OrderItems();
                 $orderItems->setOrderId($this->getReference('order'));
                 $orderItems->setProduct($this->getReference('product'));

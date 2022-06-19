@@ -51,12 +51,14 @@
 					<th>seller</th>
 					<th>is Paid</th>
 					<th>date Solled</th>
+					<th>pdf rout</th>
 				</tr>
 				{% for user_all in order_result %}
 					<tr>
 						<td>{{ user_all.seller }}</td>
 						<td>{{ user_all.isPaid }}</td>
 						<td>{{ user_all.dateSold |date('d-m-Y') }}</td>
+						<td>{{ user_all.pdfRout }}</td>
 					</tr>
 				{% endfor %}
 			</table>

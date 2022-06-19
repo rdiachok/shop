@@ -12,12 +12,14 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         //create 8 orders! 
-        for ($i = 0; $i < 8; $i++) { {
+        for ($i = 0; $i < 8; $i++) { 
+            {
                 $order = new Orders();
                 $order->setSeller('seller' . $i);
                 $order->setDateSold(new \DateTime());
                 $order->setIsPaid(rand(TRUE, FALSE));
                 $order->setCustomer($this->getReference('user'));
+                $order->setPdfRout('/public/PDF/seller/' . $i);
                 $manager->persist($order);
                 $this->setReference('order', $order);
             }

@@ -11,7 +11,8 @@ class UserFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         //create 2 users! before start check Email - its Unique!!!
-        for ($i = 0; $i < 2; $i++) { {
+        for ($i = 0; $i < 2; $i++) { 
+            {
                 $user = new Users();
                 $user->setFirstName('firstName' . $i);
                 $user->setLastName('lastName' . $i);

@@ -14,9 +14,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Services\PDFServices;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 
 class OrderController extends AbstractController
 {
+    const ROUT_TO_PDF = '/public/PDF/';
     const ORDER_PDF_ROUTE = '/order/orderInfo.html.twig';
     const ORDER_ITEMS_ROUTE = '/order/items.html.twig';
     const ORDER_PDF_NAME = 'order';
@@ -34,7 +38,7 @@ class OrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            return $this->redirectToRoute('order_add_pdf');
+            return $this->redirectToRoute('order_add');
         }
 
         return $this->render(
@@ -49,42 +53,10 @@ class OrderController extends AbstractController
     /**
      * @Route("/order/add/", name="order_add", methods={"GET", "POST"})
      */
-    public function orderAdd(Request $request): Response
-    {
-        $order = new Orders();
-
-        $form = $this->createForm(AddOrderType::class, $order);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($order);
-            $entityManager->flush();
-
-            return $this->render(
-                'order/indexAddOrder.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'text' => 'Order complite'
-                ]
-            );
-        }
-
-        return $this->render(
-            'order/indexAddOrder.html.twig',
-            [
-                'form' => $form->createView(),
-                'text' => 'Add some info about order!'
-            ]
-        );
-    }
-
-    /**
-     * @Route("/order/add/pdf", name="order_add_pdf", methods={"GET", "POST"})
-     */
-    public function orderAddPDF(Request $request, PDFServices $PDFServices): Response
+    public function orderAdd(Request $request, PDFServices $PDFServices): Response
     {
         $rout = self::ORDER_PDF_ROUTE;
+        $wtpdf = self::ROUT_TO_PDF;
 
         $order = new Orders();
 
@@ -92,6 +64,8 @@ class OrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            dump($order);
+            $order->setPdfRout($wtpdf . $order->getSeller() . 'PDF.pdf');
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($order);
             $entityManager->flush();
@@ -101,7 +75,7 @@ class OrderController extends AbstractController
                 ->getRepository(Orders::class)
                 ->findBy(['id' => $order->getId()]);
 
-            $PDFServices->getServisesPDF($orderGet, $rout, $order->getId());
+            $PDFServices->getServisesPDF($orderGet, $rout, $order->getSeller());
 
             return $this->render(
                 'order/indexAddOrder.html.twig',
@@ -186,12 +160,14 @@ class OrderController extends AbstractController
     public function orderUpdateById(int $id, Request $request, PDFServices $PDFServices): Response
     {
         $rout = self::ORDER_PDF_ROUTE;
+        $wtpdf = self::ROUT_TO_PDF;
 
         $order = $this->getDoctrine()->getRepository(Orders::class)->findOneBy(['id' => $id]);
         $form = $this->createForm(AddOrderType::class, $order);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $order->setPdfRout($wtpdf . $order->getSeller() . 'PDF.pdf');
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($order);
             $entityManager->flush();
@@ -242,9 +218,20 @@ class OrderController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         $orderDelete = $entityManager->getRepository(Orders::class)->findOneBy(['id' => $id]);
+        $nameForDelete = $orderDelete->getSeller();
         $entityManager->remove($orderDelete);
         $entityManager->flush();
         $order = $this->getDoctrine()->getRepository(Orders::class)->findAll();
+
+        $filesystem = new Filesystem();
+
+        try {
+            $filesystem->remove(
+                [$this->getParameter('orders_pdf_directory') . $nameForDelete . 'PDF.pdf']
+            );
+        } catch (IOExceptionInterface $exception) {
+            echo "An error occurred while creating your directory at " . $exception->getPath();
+        }
 
         return $this->render(
             'order/indexDeleteSomeOrder.html.twig',

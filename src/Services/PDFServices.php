@@ -48,7 +48,7 @@ class PDFServices
         $output = $dompdf->output();
 
         // In this case, we want to write the file in the public directory
-        $publicDirectory = $this->appKernel->getProjectDir() . '/src/PDF';
+        $publicDirectory = $this->appKernel->getProjectDir() . '/public/PDF';
         
         // e.g /var/www/project/public/mypdf.pdf
         $pdfFilepath =  $publicDirectory . '/'. $id .'PDF.pdf';
