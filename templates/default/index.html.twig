@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello DefaultController!
+{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
+
+	<div class="example-wrapper">
+		<div class="product-list">
+			<h3>All products:</h3>
+			<table>
+				<tr>
+					<th>name</th>
+					<th>maker</th>
+					<th>price</th>
+					<th>date create</th>
+					<th>date update</th>
+					<th>description</th>
+					<th>summ</th>
+				</tr>
+				{% for user_all in product_result %}
+					<tr>
+						<td>{{ user_all.name }}</td>
+						<td>{{ user_all.maker }}</td>
+						<td>{{ user_all.price }}</td>
+						<td>{{ user_all.dateCreate |date('d-m-Y') }}</td>
+						{% if user_all.dateUpdate %}
+							<td>{{ user_all.dateUpdate|date('d-m-Y') }}</td>
+						{% else %}
+							<td></td>
+						{% endif %}
+						<td>{{ user_all.description }}</td>
+						<td>{{ user_all.summ }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+		<div class="links">
+			<ul>
+				<li>
+					{% if app.user %}
+						<a href="{{ path('app_logout') }}">Logout</a>
+					{% else %}
+						<a href="{{path('app_login')}}">Login</a>
+					{% endif %}
+				</li>
+				<li>
+					<a href="{{path('order')}}">Orders</a>
+				</li>
+				{% if is_granted('ROLE_ADMIN') %}
+					<li>
+						<a href="{{path('user_index')}}">Users</a>
+					</li>
+				{% elseif is_granted('ROLE_SUPER_ADMIN') %}
+					<li>
+						<a href="{{path('user_index')}}">Users</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

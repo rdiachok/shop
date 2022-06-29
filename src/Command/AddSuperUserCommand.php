@@ -11,17 +11,21 @@ use App\Entity\Users;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Exception\RuntimeException;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AddSuperUserCommand extends Command
 {
     protected static $defaultName = 'app:add-super-user';
     protected static $defaultDescription = 'add new user with role - superAdmin';
-    const SUPER_ADMIN = 'superAdmin';
+    private $passwordEncoder;
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
 
-    public function __construct(
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder,
         private EntityManagerInterface $entityManager,
         private UsersRepository $users
-    ) {
+    )
+    {
+        $this->passwordEncoder = $passwordEncoder;
         parent::__construct();
     }
 
@@ -49,7 +53,11 @@ class AddSuperUserCommand extends Command
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
         $user->setEmail($email);
-        $user->setRole(self::SUPER_ADMIN);
+        $user->setRoles([self::ROLE_SUPER_ADMIN]);
+        $user->setPassword($this->passwordEncoder->encodePassword(
+            $user,
+            '1234'
+            )); 
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

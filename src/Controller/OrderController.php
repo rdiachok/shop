@@ -17,7 +17,13 @@ use App\Services\PDFServices;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * 
+ * @IsGranted("ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_MANAGER", "ROLE_SALESMAN", "ROLE_CUSTOMER", statusCode=404, message="problem with loggin")
+ * 
+ */
 class OrderController extends AbstractController
 {
     const ROUT_TO_PDF = '/public/PDF/';

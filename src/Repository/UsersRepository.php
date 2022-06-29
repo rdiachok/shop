@@ -28,7 +28,7 @@ class UsersRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('u')
             ->andWhere('u.email like :val')
             ->setParameter('val', '%' . $value . '%')
-            ->orderBy('u.role', 'ASC')
+            ->orderBy('u.roles', 'ASC')
             ->getQuery()
             ->getResult();
     }

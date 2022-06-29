@@ -8,9 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Users;
-use App\Form\AddUserType;
+use App\Form\RegistrationUserType;
 use App\Form\UserSortingByFieldType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+/**
+ * 
+ * @IsGranted("ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_MANAGER", "ROLE_SALESMAN", "ROLE_CUSTOMER", statusCode=404, message="problem with loggin")
+ * 
+ */
 class UserController extends AbstractController
 {
     /**
@@ -20,7 +26,7 @@ class UserController extends AbstractController
     {
         $user = new Users();
 
-        $form = $this->createForm(AddUserType::class, $user);
+        $form = $this->createForm(RegistrationUserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -29,14 +35,18 @@ class UserController extends AbstractController
             $entityManager->flush();
             $userGet = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
-            return $this->render('user/index.html.twig', [
-                'user_result' => $userGet,
-                'form' => '',
-            ]
-        );
+            return $this->render(
+                'user/index.html.twig',
+                [
+                    'user_result' => $userGet,
+                    'form' => '',
+                ]
+            );
         }
 
-        return $this->render('user/indexAddUser.html.twig', [
+        return $this->render(
+            'user/indexAddUser.html.twig',
+            [
                 'form' => $form->createView(),
                 'text' => 'Add some info about yourself!'
             ]
@@ -57,21 +67,27 @@ class UserController extends AbstractController
                 ->findByExampleField($form->get('email')->getData());
 
             if (!$user) {
-                return $this->render('user/indexAddUser.html.twig', [
+                return $this->render(
+                    'user/indexAddUser.html.twig',
+                    [
                         'form' => $form->createView(),
                         'text' => 'Email is not in table, Please check !'
                     ]
                 );
             }
 
-            return $this->render('user/resultEmailSearch.html.twig', [
+            return $this->render(
+                'user/resultEmailSearch.html.twig',
+                [
                     'user_result' => $user,
                     'text' => 'Some info'
                 ]
             );
         }
 
-        return $this->render('user/indexAddUser.html.twig', [
+        return $this->render(
+            'user/indexAddUser.html.twig',
+            [
                 'form' => $form->createView(),
                 'text' => 'Please input correct email!'
             ]
@@ -85,7 +101,9 @@ class UserController extends AbstractController
     {
         $user = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
-        return $this->render('user/indexUpdateSomeUser.html.twig', [
+        return $this->render(
+            'user/indexUpdateSomeUser.html.twig',
+            [
                 'user_result' => $user,
                 'user_set' => '',
             ]
@@ -107,14 +125,18 @@ class UserController extends AbstractController
             $entityManager->flush();
             $user = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
-            return $this->render('user/indexUpdateSomeUser.html.twig', [
+            return $this->render(
+                'user/indexUpdateSomeUser.html.twig',
+                [
                     'user_result' => $user,
                     'user_set' => $id,
                 ]
             );
         }
 
-        return $this->render('user/indexUpdateSomeUserById.html.twig', [
+        return $this->render(
+            'user/indexUpdateSomeUserById.html.twig',
+            [
                 'form' => $form->createView(),
             ]
         );
@@ -130,7 +152,9 @@ class UserController extends AbstractController
         $entityManager->remove($userDelete);
         $entityManager->flush();
 
-        return $this->render('user/indexDeleteSomeUser.html.twig', [
+        return $this->render(
+            'user/indexDeleteSomeUser.html.twig',
+            [
                 'user_result' => 'Done!',
                 'user_set' => $id,
             ]
@@ -144,7 +168,9 @@ class UserController extends AbstractController
     {
         $user = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
-        return $this->render('user/indexDeleteSomeUser.html.twig', [
+        return $this->render(
+            'user/indexDeleteSomeUser.html.twig',
+            [
                 'user_result' => $user,
                 'user_set' => '',
             ]
@@ -158,7 +184,9 @@ class UserController extends AbstractController
     {
         $userGet = $this->getDoctrine()->getRepository(Users::class)->findAll();
 
-        return $this->render('user/index.html.twig', [
+        return $this->render(
+            'user/index.html.twig',
+            [
                 'user_result' => $userGet,
                 'form' => '',
             ]
@@ -177,29 +205,36 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->getDoctrine()
                 ->getRepository(Users::class)
-                ->sortTableBySomeField($form->get('field')->getData(),
-                $form->get('sort')->getData());
+                ->sortTableBySomeField(
+                    $form->get('field')->getData(),
+                    $form->get('sort')->getData()
+                );
 
             if (!$user) {
-                return $this->render('user/indexAddUser.html.twig', [
+                return $this->render(
+                    'user/indexAddUser.html.twig',
+                    [
                         'form' => $form->createView(),
                         'text' => 'Email is not in table, Please check !'
                     ]
                 );
             }
 
-            return $this->render('user/sorting.html.twig', [
+            return $this->render(
+                'user/sorting.html.twig',
+                [
                     'form' => $form->createView(),
                     'user_result' => $user,
                 ]
             );
         }
 
-        return $this->render('user/sorting.html.twig', [
+        return $this->render(
+            'user/sorting.html.twig',
+            [
                 'form' => $form->createView(),
                 'user_result' => $userGet,
             ]
         );
     }
-
 }

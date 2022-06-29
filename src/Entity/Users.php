@@ -7,16 +7,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UsersRepository::class)
+ * @UniqueEntity("email")
  */
-class Users
+class Users implements UserInterface
 {
-    const ADMIN = 'admin';
-    const MANAGER = 'manager';
-    const SALESMAN = 'salesman';
-    const CUSTOMER = 'customer';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_MANAGER = 'ROLE_MANAGER';
+    const ROLE_SALESMAN = 'ROLE_SALESMAN';
+    const ROLE_CUSTOMER = 'ROLE_CUSTOMER';
 
     /**
      * @ORM\Id
@@ -50,10 +53,9 @@ class Users
 
     /**
      * @Assert\NotBlank
-     * @ORM\Column(type="string", columnDefinition="enum('admin', 'manager', 'salesman', 'customer', 'superAdmin')")
+     * @ORM\Column(type="json")
      */
-    private $role;
-
+    private $roles = [];
 
     /**)
      * @ORM\OneToMany(targetEntity=Products::class, mappedBy="userAdd")
@@ -65,17 +67,29 @@ class Users
      */
     private $orders;
 
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     */
+    private $password;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
         $this->orders = new ArrayCollection();
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -88,6 +102,9 @@ class Users
         return $this;
     }
 
+    /**
+     * @see UserInterface
+     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -100,7 +117,9 @@ class Users
         return $this;
     }
 
-
+    /**
+     * @see UserInterface
+     */
     public function getLastName(): ?string
     {
         return $this->lastName;
@@ -113,16 +132,68 @@ class Users
         return $this;
     }
 
-    public function getRole(): ?string
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        return $this->role;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_CUSTOMER';
+
+        return array_unique($roles);
     }
 
-    public function setRole(string $role): self
+    public function setRoles(array $roles): self
     {
-        $this->role = $role;
+        $this->roles = $roles;
 
         return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string|null
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Returning a salt is only needed, if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     /**
@@ -190,10 +261,10 @@ class Users
     public function getRoleUserFixtures($randomId): ?string
     {
         $boxRole = [
-            self::ADMIN,
-            self::MANAGER,
-            self::SALESMAN,
-            self::CUSTOMER
+            self::ROLE_ADMIN,
+            self::ROLE_MANAGER,
+            self::ROLE_SALESMAN,
+            self::ROLE_CUSTOMER
         ];
 
         return $boxRole[$randomId];
