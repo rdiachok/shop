@@ -6,6 +6,7 @@ use App\Repository\OrdersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=OrdersRepository::class)
@@ -45,6 +46,11 @@ class Orders
      * @ORM\OneToMany(targetEntity=OrderItems::class, mappedBy="orderId")
      */
     private $orderItems;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $pdfRout;
 
     public function __construct()
     {
@@ -130,6 +136,18 @@ class Orders
                 $orderItem->setOrderId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPdfRout(): ?string
+    {
+        return $this->pdfRout;
+    }
+
+    public function setPdfRout(string $pdfRout): self
+    {
+        $this->pdfRout = $pdfRout;
 
         return $this;
     }

@@ -32,7 +32,7 @@ class OrderItems
     /**
      * @ORM\Column(type="integer")
      */
-    private $number;
+    private $quantity;
 
     public function getId(): ?int
     {
@@ -63,14 +63,14 @@ class OrderItems
         return $this;
     }
 
-    public function getNumber(): ?int
+    public function getQuantity(): ?int
     {
-        return $this->number;
+        return $this->quantity;
     }
 
-    public function setNumber(int $number): self
+    public function setQuantity(int $quantity): self
     {
-        $this->number = $number;
+        $this->quantity = $quantity;
 
         return $this;
     }

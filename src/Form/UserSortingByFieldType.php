@@ -14,7 +14,7 @@ class UserSortingByFieldType extends AbstractType
     const EMAIL = 'email';
     const FIRST_NAME = 'firstName';
     const LAST_NAME = 'lastName';
-    const ROLE = 'role';
+    const ROLE = 'roles';
     const ASC = 'ASC';
     const DESC = 'DESC';
 

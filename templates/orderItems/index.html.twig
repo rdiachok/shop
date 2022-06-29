@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Hello OrderController!
+    
+{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        <h1>
+            Order Page ✅
+                    
+        </h1>
+        <ul>
+            <li>
+                <a href="{{ path('order_add') }}">
+                    Add new order 
+                                    
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('order_date_sold_search') }}">
+                    Find some order 
+                                    
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('order_update') }}">
+                    Update order 
+                                    
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('order_delete') }}">
+                    Delete order 
+                                    
+                </a>
+            </li>
+        </ul>
+
+        <h3>
+            All order items:
+                    
+        </h3>
+        <table>
+            <tr>
+                <th>
+                    id
+                                    
+                </th>
+                <th>
+                    Item
+                                    
+                </th>
+                <th>
+                    Quantity
+                                    
+                </th>
+                <th>
+                    Email
+                                    
+                </th>
+            </tr>
+            {% for order_get in order_result %}
+                <tr>
+                    <td>
+                        {{ order_get.id }}
+                    </td>
+                    <td>
+                        {{ order_get.product.name }}
+                    </td>
+                    <td>
+                        {{ order_get.quantity }}
+                    </td>
+                    <td>
+                        {{ order_get.orderId.customer.email }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        {{ form(form) }}
+        </div>
+    {% endblock %}
+    
